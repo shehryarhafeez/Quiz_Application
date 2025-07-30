@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pakistan Current Affairs Quiz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Marcellus+SC&display=swap');
+    
+    :root {
+      --gold: #D4AF37;
+      --dark-gold: #996515;
+      --sand: #F5DEB3;
+      --dark-sand: #C2B280;
+      --papyrus: #F5E7C1;
+      --hieroglyph: #3A3A3A;
+      --tomb: #1A0E00;
+      --pyramid: #0d0d0d;
+    }
+    
+    body {
+      margin: 0;
+      background: linear-gradient(to bottom, var(--pyramid), var(--tomb));
+      font-family: 'Marcellus SC', serif;
+      color: var(--sand);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    
+    /* Smoke effect styles */
+    .smoke-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .smoke {
+      position: absolute;
+      bottom: -100px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(245,222,179,0.3) 0%, rgba(212,175,55,0.1) 70%, transparent 100%);
+      border-radius: 50%;
+      filter: blur(15px);
+      animation: rise linear infinite;
+      opacity: 0.7;
+    }
+    
+    @keyframes rise {
+      0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.3;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+    
+    .container {
+      background: url('https://i.imgur.com/SandTexture.jpg') repeat;
+      border: 3px solid var(--gold);
+      border-radius: 5px;
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+      width: 90%;
+      max-width: 800px;
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('https://i.imgur.com/HieroglyphPattern.png') repeat;
+      opacity: 0.1;
+      pointer-events: none;
+    }
+    
+    h1, h2 {
+      font-family: 'Cinzel Decorative', serif;
+      color: var(--gold);
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow {
+      from { text-shadow: 0 0 10px var(--gold); }
+      to { text-shadow: 0 0 30px var(--gold), 0 0 60px var(--dark-gold); }
+    }
+    
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+    
+    p {
+      line-height: 1.6;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .btn {
+      background: linear-gradient(to bottom, var(--gold), var(--dark-gold));
+      color: var(--tomb);
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Marcellus SC', serif;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      margin: 10px 5px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+      display: block;
+      margin: 20px auto;
+    }
+    
+    .btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+    
+    .btn:active {
+      transform: translateY(1px);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(to bottom, var(--sand), var(--dark-sand));
+    }
+    
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--gold);
+    }
+    
+    .question-count, .score-display, .timer-display {
+      font-weight: bold;
+      font-size: 16px;
+      color: var(--gold);
+    }
+    
+    .timer-display {
+      color: var(--sand);
+    }
+    
+    .question-container {
+      margin-bottom: 30px;
+      min-height: 100px;
+      background-color: rgba(245, 231, 193, 0.1);
+      padding: 20px;
+      border-radius: 5px;
+      border: 1px solid var(--gold);
+    }
+    
+    .question-text {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 25px;
+      color: var(--sand);
+    }
+    
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+    
+    #startBtn {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    
+    .option {
+      background-color: rgba(24, 16, 2, 0.1);
+      padding: 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+      border: 2px solid transparent;
+      color: var(--sand);
+      font-size: 18px;
+      position: relative;
+    }
+    
+    .option:hover {
+      background-color: rgba(245, 222, 179, 0.2);
+      border-color: var(--gold);
+    }
+    
+    .option.selected {
+      background-color: rgba(245, 222, 179, 0.3);
+      border-color: var(--gold);
+      transform: scale(1.02);
+      box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+    }
+    
+    .option.correct {
+      background-color: rgba(76, 175, 80, 0.3);
+      color: #a5d6a7;
+      border-color: #4caf50;
+    }
+    
+    .option.incorrect {
+      background-color: rgba(244, 67, 54, 0.3);
+      color: #ef9a9a;
+      border-color: #f44336;
+    }
+    
+    .option.disabled {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    
+    .next-btn {
+      display: block;
+      margin: 0 auto;
+      width: 180px;
+      font-size: 18px;
+    }
+    
+    .result-container h2 {
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    
+    .result-stats {
+      margin: 30px 0;
+      font-size: 20px;
+      background-color: rgba(26, 14, 0, 0.7);
+      padding: 20px;
+      border-radius: 5px;
+      border: 1px solid var(--gold);
+    }
+    
+    .result-stat {
+      margin: 15px 0;
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--gold);
+    }
+    
+    .progress-container {
+      height: 10px;
+      background-color: rgba(245, 222, 179, 0.2);
+      border-radius: 5px;
+      margin: 20px 0;
+      overflow: hidden;
+      border: 1px solid var(--gold);
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(to right, var(--dark-gold), var(--gold));
+      transition: width 0.3s ease;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .hieroglyph {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.2;
+      z-index: 0;
+    }
+    
+    .hieroglyph:nth-child(1) {
+      top: 20px;
+      left: 20px;
+    }
+    
+    .hieroglyph:nth-child(2) {
+      top: 20px;
+      right: 20px;
+    }
+    
+    .hieroglyph:nth-child(3) {
+      bottom: 20px;
+      left: 20px;
+    }
+    
+    .hieroglyph:nth-child(4) {
+      bottom: 20px;
+      right: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      h2 {
+        font-size: 1.8rem;
+      }
+      
+      .container {
+        padding: 20px;
+        width: 95%;
+      }
+      
+      .question-text {
+        font-size: 20px;
+      }
+      
+      .option {
+        font-size: 16px;
+        padding: 12px;
+      }
+      
+      .result-stat {
+        font-size: 18px;
+      }
+    }
+    
+    /* Ankh symbol for correct answers */
+    .correct::after {
+      content: "𓋹";
+      position: absolute;
+      right: 15px;
+      font-size: 24px;
+    }
+    
+    /* Eye of Horus symbol for incorrect answers */
+    .incorrect::after {
+      content: "𓂀";
+      position: absolute;
+      right: 15px;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Smoke effect container -->
+  <div class="smoke-container" id="smokeContainer"></div>
+  
+  <div class="container">
+    <!-- Hieroglyph decorations -->
+    <div class="hieroglyph">𓃭</div>
+    <div class="hieroglyph">𓅓</div>
+    <div class="hieroglyph">𓆣</div>
+    <div class="hieroglyph">𓂋</div>
+    
+    <!-- Start Screen -->
+    <div class="start-screen" id="startScreen">
+      <h1>Pakistan Current Affairs Quiz</h1>
+      <p>Test your knowledge of recent events in Pakistan!</p>
+      <p>You'll have 60 seconds to answer all 20 questions about Pakistan's current affairs.</p>
+      <p>Challenge yourself and see how well you know your country!</p>
+      <button class="btn" id="startBtn">Begin Quiz 𓋹</button>
+    </div>
+
+    <!-- Quiz Container -->
+    <div class="quiz-container hidden" id="quizContainer">
+      <div class="quiz-header">
+        <div class="question-count" id="questionCount">Question 1/20</div>
+        <div class="score-display" id="scoreDisplay">Score: 0</div>
+        <div class="timer-display" id="timerDisplay">𓉳 Time: 60s</div>
+      </div>
+      
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      
+      <div class="question-container">
+        <div class="question-text" id="questionText"></div>
+      </div>
+      
+      <div class="options-container" id="optionsContainer"></div>
+      
+      <button class="btn next-btn hidden" id="nextBtn">Next 𓂀</button>
+    </div>
+
+    <!-- Result Container -->
+    <div class="result-container hidden" id="resultContainer">
+      <h2>Your Journey Ends...</h2>
+      <div class="result-stats">
+        <div class="result-stat">
+          <span>Correct Answers:</span>
+          <span id="correctAnswers">0</span>
+        </div>
+        <div class="result-stat">
+          <span>Total Questions:</span>
+          <span id="totalQuestions">0</span>
+        </div>
+        <div class="result-stat">
+          <span>Percentage:</span>
+          <span id="percentage">0%</span>
+        </div>
+        <div class="result-stat">
+          <span>Time Taken:</span>
+          <span id="timeTaken">0s</span>
+        </div>
+      </div>
+      <button class="btn" id="restartBtn">Try Again 𓄿</button>
+    </div>
+  </div>
+
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  // DOM Elements
+  const startScreen = document.getElementById('startScreen');
+  const quizContainer = document.getElementById('quizContainer');
+  const resultContainer = document.getElementById('resultContainer');
+  const startBtn = document.getElementById('startBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const restartBtn = document.getElementById('restartBtn');
+  const questionText = document.getElementById('questionText');
+  const optionsContainer = document.getElementById('optionsContainer');
+  const questionCount = document.getElementById('questionCount');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const timerDisplay = document.getElementById('timerDisplay');
+  const progressBar = document.getElementById('progressBar');
+  const correctAnswersEl = document.getElementById('correctAnswers');
+  const totalQuestionsEl = document.getElementById('totalQuestions');
+  const percentageEl = document.getElementById('percentage');
+  const timeTakenEl = document.getElementById('timeTaken');
+  const smokeContainer = document.getElementById('smokeContainer');
+
+  // Create smoke particles
+  function createSmoke() {
+    const smoke = document.createElement('div');
+    smoke.classList.add('smoke');
+    
+    // Random position at bottom
+    const leftPos = Math.random() * 100;
+    smoke.style.left = `${leftPos}%`;
+    
+    // Random size
+    const size = 100 + Math.random() * 100;
+    smoke.style.width = `${size}px`;
+    smoke.style.height = `${size}px`;
+    
+    // Random animation duration
+    const duration = 10 + Math.random() * 20;
+    smoke.style.animationDuration = `${duration}s`;
+    
+    smokeContainer.appendChild(smoke);
+    
+    // Remove smoke element after animation completes
+    setTimeout(() => {
+      smoke.remove();
+    }, duration * 1000);
+  }
+  
+  // Start smoke effect
+  function startSmokeEffect() {
+    // Create initial smoke particles
+    for (let i = 0; i < 10; i++) {
+      createSmoke();
+    }
+    
+    // Continue creating smoke at intervals
+    setInterval(createSmoke, 2000);
+  }
+  
+  // Start smoke effect when page loads
+  startSmokeEffect();
+
+  // Quiz Variables
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let timer;
+  let timeLeft = 60; // 60 seconds for entire quiz
+  let quizQuestions = [];
+  let selectedOption = null;
+  let quizStartTime;
+  let shuffledQuestions = [];
+
+  // Pakistan Current Affairs Questions (2023-2024)
+  const questions = [
+    {
+      question: "Who became Pakistan's caretaker Prime Minister in August 2023?",
+      options: ["Shahid Khaqan Abbasi", "Anwaar-ul-Haq Kakar", "Imran Khan", "Shehbaz Sharif"],
+      correctAnswer: 1
+    },
+    {
+      question: "Which country hosted the 2023 Asia Cup cricket tournament?",
+      options: ["Pakistan and Sri Lanka", "India and Bangladesh", "UAE and Oman", "Pakistan alone"],
+      correctAnswer: 2
+    },
+    {
+      question: "What was the inflation rate in Pakistan as of December 2023?",
+      options: ["Around 12%", "Around 25%", "Around 30%", "Around 8%"],
+      correctAnswer: 2
+    },
+    {
+      question: "Which Pakistani city was ranked among the world's most polluted cities in 2023?",
+      options: ["Islamabad", "Lahore", "Karachi", "Peshawar"],
+      correctAnswer: 1
+    },
+    {
+      question: "What was the name of Pakistan's lunar mission launched in 2023?",
+      options: ["PakMoon", "Luna-Pak", "ICUBE-Qamar", "Chand-1"],
+      correctAnswer: 2
+    },
+    {
+      question: "Which Pakistani athlete won a gold medal in the 2023 Asian Games?",
+      options: ["Arshad Nadeem (Javelin)", "Babar Azam (Cricket)", "Shah Hussain (Judo)", "None of the above"],
+      correctAnswer: 2
+    },
+    {
+      question: "What was the growth rate of Pakistan's GDP in FY 2022-23?",
+      options: ["0.29%", "5.7%", "3.5%", "-1.0%"],
+      correctAnswer: 1
+    },
+    {
+      question: "Which international organization approved a $3 billion bailout for Pakistan in 2023?",
+      options: ["World Bank", "IMF", "Asian Development Bank", "Islamic Development Bank"],
+      correctAnswer: 1
+    },
+    {
+      question: "Which Pakistani film won the Best International Feature Film award at the 2023 Red Sea Film Festival?",
+      options: ["Joyland", "The Legend of Maula Jatt", "In Flames", "Kamli"],
+      correctAnswer: 2
+    },
+    {
+      question: "What was Pakistan's rank in the 2023 Global Hunger Index?",
+      options: ["92nd out of 116", "102nd out of 116", "112th out of 116", "85th out of 116"],
+      correctAnswer: 1
+    },
+    {
+      question: "Which Pakistani university was ranked among the top 300 in QS World University Rankings 2024?",
+      options: ["LUMS", "Quaid-e-Azam University", "University of Punjab", "NUST"],
+      correctAnswer: 1
+    },
+    {
+      question: "What was the name of the operation launched against illegal immigrants in Pakistan in late 2023?",
+      options: ["Operation Clean Sweep", "Operation Rah-e-Haq", "Operation Zarb-e-Azb", "None of these"],
+      correctAnswer: 3
+    },
+    {
+      question: "Which Pakistani tech startup became the country's first unicorn in 2023?",
+      options: ["Careem", "Bykea", "Airlift", "None of these"],
+      correctAnswer: 3
+    },
+    {
+      question: "What was Pakistan's position in the 2023 ICC Men's Cricket World Cup?",
+      options: ["Semi-finalists", "Quarter-finalists", "Group stage exit", "Runners-up"],
+      correctAnswer: 2
+    },
+    {
+      question: "Which province of Pakistan passed a bill in 2023 to establish a provincial finance commission?",
+      options: ["Punjab", "Sindh", "Khyber Pakhtunkhwa", "Balochistan"],
+      correctAnswer: 2
+    },
+    {
+      question: "What was the name of the cyclone that affected Pakistan's coastal areas in June 2023?",
+      options: ["Cyclone Biparjoy", "Cyclone Tauktae", "Cyclone Amphan", "Cyclone Nisarga"],
+      correctAnswer: 1
+    },
+    {
+      question: "Which Pakistani city hosted the 2023 International Defense Exhibition and Seminar (IDEAS)?",
+      options: ["Islamabad", "Karachi", "Lahore", "Rawalpindi"],
+      correctAnswer: 1
+    },
+    {
+      question: "What was the theme of Pakistan's 2023 Independence Day celebrations?",
+      options: ["Unity, Faith, Discipline", "Green Pakistan", "Digital Pakistan", "Jashn-e-Azadi"],
+      correctAnswer: 1
+    },
+    {
+      question: "Which Pakistani woman was included in BBC's 100 Women list for 2023?",
+      options: ["Malala Yousafzai", "Muniba Mazari", "Nida Dar", "Yasmeen Lari"],
+      correctAnswer: 3
+    },
+    {
+      question: "What was Pakistan's rank in the 2023 World Press Freedom Index?",
+      options: ["120th", "150th", "180th", "90th"],
+      correctAnswer: 1
+    }
+  ];
+
+  // Event Listeners
+  startBtn.addEventListener('click', startQuiz);
+  nextBtn.addEventListener('click', showNextQuestion);
+  restartBtn.addEventListener('click', restartQuiz);
+  tryahainbtn
+
+  // Functions
+  function startQuiz() {
+    // Shuffle questions
+    shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+    
+    // Animate transition
+    gsap.to(startScreen, {
+      opacity: 0,
+      y: -50,
+      duration: 0.5,
+      onComplete: () => {
+        startScreen.classList.add('hidden');
+        quizContainer.classList.remove('hidden');
+        gsap.from(quizContainer, {
+          opacity: 0,
+          y: 50,
+          duration: 0.5
+        });
+      }
+    });
+    
+    currentQuestionIndex = 0;
+    score = 0;
+    timeLeft = 60; // 60 seconds for entire quiz
+    quizStartTime = new Date().getTime();
+    
+    updateScore();
+    startTimer();
+    showQuestion();
+  }
+
+  function startTimer() {
+    clearInterval(timer); // Clear any existing timer
+    timeLeft = 60; // 60 seconds for entire quiz
+    updateTimerDisplay();
+    timer = setInterval(() => {
+      timeLeft--;
+      updateTimerDisplay();
+      
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        endQuiz(); // End quiz when time runs out and submits it
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    timerDisplay.textContent = `𓉳 Time: ${timeLeft}s`;
+  }
+
+  function showQuestion() {
+    resetState();
+    const currentQuestion = shuffledQuestions[currentQuestionIndex];
+    questionText.textContent = currentQuestion.question;
+    
+    // Update question count
+    questionCount.textContent = `Question ${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
+    
+    // Update progress bar
+    progressBar.style.width = `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%`;
+    
+    // Create options with animation
+    currentQuestion.options.forEach((option, index) => {
+      const optionElement = document.createElement('div');
+      optionElement.classList.add('option');
+      optionElement.textContent = option;
+      optionElement.addEventListener('click', () => selectOption(optionElement, index));
+      optionsContainer.appendChild(optionElement);
+      
+  
+    });
+    
+    // Timer continues running (removed the startTimer() call)
+  }
+
+  function resetState() {
+    nextBtn.classList.add('hidden');
+    optionsContainer.innerHTML = '';
+    selectedOption = null;
+  }
+
+  function selectOption(optionElement, optionIndex) {
+    if (selectedOption !== null) return;
+    
+    selectedOption = optionIndex;
+    const currentQuestion = shuffledQuestions[currentQuestionIndex];
+    
+    // Disable all options
+    const options = document.querySelectorAll('.option');
+    options.forEach(option => {
+      option.classList.add('disabled');
+    });
+    
+    // Highlight selected option
+    optionElement.classList.add('selected');
+    
+    // Check if answer is correct
+    if (optionIndex === currentQuestion.correctAnswer) {
+      optionElement.classList.add('correct');
+      score++;
+      updateScore();
+      
+      // Animate correct answer
+      gsap.to(optionElement, {
+        scale: 1.05,
+        yoyo: true,
+        repeat: 1,
+        duration: 0.3
+      });
+    } else {
+      optionElement.classList.add('incorrect');
+      // Also show the correct answer
+      options[currentQuestion.correctAnswer].classList.add('correct');
+      
+      // Animate incorrect answer
+      gsap.to(optionElement, {
+        x: [-5, 5, -5, 5, 0],
+        duration: 0.5
+      });
+    }
+    
+    // Show next button with animation
+    nextBtn.classList.remove('hidden');
+    gsap.from(nextBtn, {
+      opacity: 0,
+      y: 20,
+      duration: 0.5
+    });
+  }
+
+  function updateScore() {
+    scoreDisplay.textContent = `Score: ${score}`;
+  }
+
+  function showNextQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < shuffledQuestions.length) {
+      // Animate transition to next question
+      gsap.to(quizContainer, {
+        opacity: 0,
+        y: -20,
+        duration: 0.3,
+        onComplete: () => {
+          showQuestion();
+          gsap.to(quizContainer, {
+            opacity: 1,
+            y: 0,
+            duration: 0.3
+          });
+        }
+      });
+    } else {
+      endQuiz();
+    }
+  }
+
+  function endQuiz() {
+    clearInterval(timer);
+    
+    // Animate transition to results
+    gsap.to(quizContainer, {
+      opacity: 0,
+      y: -50,
+      duration: 0.5,
+      onComplete: () => {
+        quizContainer.classList.add('hidden');
+        resultContainer.classList.remove('hidden');
+        gsap.from(resultContainer, {
+          opacity: 0,
+          y: 50,
+          duration: 0.5
+        });
+      }
+    });
+    
+    const endTime = new Date().getTime();
+    const timeTaken = Math.floor((endTime - quizStartTime) / 1000);
+    
+    const percentage = Math.round((score / shuffledQuestions.length) * 100);
+    correctAnswersEl.textContent = score;
+    totalQuestionsEl.textContent = shuffledQuestions.length;
+    percentageEl.textContent = `${percentage}%`;
+    timeTakenEl.textContent = `${timeTaken}s`;
+  }
+
+  function restartQuiz() {
+    // Animate restart
+    gsap.to(resultContainer, {
+      opacity: 0,
+      y: 50,
+      duration: 0.5,
+      onComplete: () => {
+        resultContainer.classList.add('show');
+        startQuiz();
+      }
+    });
+  }
+  
+  // Initial animation for title
+  gsap.from(".start-screen h1", {
+    opacity: 0,
+    y: -50,
+    duration: 1.5,
+    ease: "power2.out"
+  });
+  
+  gsap.from(".start-screen p", {
+    opacity: 0,
+    y: 20,
+    duration: 1,
+    stagger: 0.2,
+    delay: 0.5
+  });
+  
+  gsap.from("#startBtn", {
+    opacity: 0,
+    y: 30,
+    duration: 1,
+    delay: 1.5
+  });
+});
+
+  </script>
+</body>
+</html>
