@@ -1,4 +1,4 @@
-# 🏛️ Egyptian-Themed Pakistan Current Affairs Quiz
+# 🏛️ Egyptian-Themed Pakistan Current Affairs Quiz Application
 
 An immersive quiz application testing knowledge of Pakistan's current affairs (2023-2024) with stunning Egyptian aesthetics, smooth animations and mobile responsive.
 
